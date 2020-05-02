@@ -74,6 +74,7 @@ export default ({
         </form>
       )}
     </Form>
+
     {action !== "confirm" && (
       <StateChanger>
         {action === "logIn" ? (

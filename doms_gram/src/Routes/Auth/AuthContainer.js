@@ -51,7 +51,8 @@ export default () => {
             toast.success("Check your inbox for your login secret");
             setAction("confirm");
           }
-        } catch {
+        } catch (error){
+          console.log(error);
           toast.error("Can't request secret, try again");
         }
       } else {

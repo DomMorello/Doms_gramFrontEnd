@@ -14,5 +14,5 @@ export default {
   whiteBox: `border:${BOX_BORDER};
              border-radius:${BORDER_RADIUS};
              background-color:white;
-            `,
+            `
 };
