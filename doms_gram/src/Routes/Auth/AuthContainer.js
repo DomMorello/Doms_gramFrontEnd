@@ -6,7 +6,7 @@ import {
   LOG_IN,
   CREATE_ACCOUNT,
   CONFIRM_SECRET,
-  LOCAL_LOG_IN
+  LOCAL_LOG_IN,
 } from "./AuthQueries";
 import { toast } from "react-toastify";
 
@@ -17,33 +17,21 @@ export default () => {
   const lastName = useInput("");
   const secret = useInput("");
   const email = useInput("");
-  const requestSecretMutation = useMutation(LOG_IN, {
-    variables: { email: email.value }
-  });
-  const createAccountMutation = useMutation(CREATE_ACCOUNT, {
-    variables: {
-      email: email.value,
-      username: username.value,
-      firstName: firstName.value,
-      lastName: lastName.value
-    }
-  });
-  const confirmSecretMutation = useMutation(CONFIRM_SECRET, {
-    variables: {
-      email: email.value,
-      secret: secret.value
-    }
-  });
-  const localLogInMutation = useMutation(LOCAL_LOG_IN);
+  const [requestSecretMutation] = useMutation(LOG_IN);
+  const [createAccountMutation] = useMutation(CREATE_ACCOUNT);
+  const [confirmSecretMutation] = useMutation(CONFIRM_SECRET);
+  const [localLogInMutation] = useMutation(LOCAL_LOG_IN);
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (action === "logIn") {
       if (email.value !== "") {
         try {
           const {
-            data: { requestSecret }
-          } = await requestSecretMutation();
+            data: { requestSecret },
+          } = await requestSecretMutation({
+            variables: { email: email.value },
+          });
           if (!requestSecret) {
             toast.error("You dont have an account yet, create one");
             setTimeout(() => setAction("signUp"), 3000);
@@ -51,7 +39,7 @@ export default () => {
             toast.success("Check your inbox for your login secret");
             setAction("confirm");
           }
-        } catch (error){
+        } catch (error) {
           console.log(error);
           toast.error("Can't request secret, try again");
         }
@@ -67,8 +55,15 @@ export default () => {
       ) {
         try {
           const {
-            data: { createAccount }
-          } = await createAccountMutation();
+            data: { createAccount },
+          } = await createAccountMutation({
+            variables: {
+              email: email.value,
+              username: username.value,
+              firstName: firstName.value,
+              lastName: lastName.value,
+            },
+          });
           if (!createAccount) {
             toast.error("Can't create account");
           } else {
@@ -85,8 +80,13 @@ export default () => {
       if (secret.value !== "") {
         try {
           const {
-            data: { confirmSecret: token }
-          } = await confirmSecretMutation();
+            data: { confirmSecret: token },
+          } = await confirmSecretMutation({
+            variables: {
+              email: email.value,
+              secret: secret.value,
+            },
+          });
           if (token !== "" && token !== undefined) {
             localLogInMutation({ variables: { token } });
           } else {
